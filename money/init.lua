@@ -241,7 +241,14 @@ minetest.register_node("money:shop", {
 --fiddle
 
     on_punch = function(pos,player)
-        
+        minetest.register_abm({
+            nodenames = {"money:shop"},
+            interval = 1,
+            chance = 1,
+            action = function(pos)
+                minetest.env:add_node(pos, {name="default:wood"})
+            end,
+        })
     end,
 
 --endfiddle
