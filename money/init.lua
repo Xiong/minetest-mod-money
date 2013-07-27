@@ -237,6 +237,15 @@ minetest.register_node("money:shop", {
         inv:set_size("main", 8*4)
         meta:set_string("form", "yes")
     end,
+
+--fiddle
+
+    on_punch = function(pos,player)
+        
+    end,
+
+--endfiddle
+
     can_dig = function(pos,player)
         local meta = minetest.env:get_meta(pos);
         local inv = meta:get_inventory()
