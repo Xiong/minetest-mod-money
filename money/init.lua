@@ -245,12 +245,12 @@ minetest.register_node("money:shop", {
         
         local meta = minetest.env:get_meta(pos)
         meta:set_string("formspec", "size[8,6.6]"..
-            "field[0.256,0.5;8,1;shopname;Name of your shop:;${text}]"..
-            "field[0.256,1.5;8,1;action;Do you want buy(B) or sell(S) or buy and sell(BS):;${text}]"..
-            "field[0.256,2.5;8,1;nodename;Name of node, that you want buy or/and sell:;${text}]"..
-            "field[0.256,3.5;8,1;amount;Amount of these nodes:;${text}]"..
-            "field[0.256,4.5;8,1;costbuy;Cost of purchase, if you buy nodes:;${text}]"..
-            "field[0.256,5.5;8,1;costsell;Cost of sales, if you sell nodes:;${text}]"..
+            "field[0.256,0.5;8,1;shopname;Name of your shop:;${shopname}]"..
+            "field[0.256,1.5;8,1;action;Do you want buy(B) or sell(S) or buy and sell(BS):;${action}]"..
+            "field[0.256,2.5;8,1;nodename;Name of node, that you want buy or/and sell:;${nodename}]"..
+            "field[0.256,3.5;8,1;amount;Amount of these nodes:;${amount}]"..
+            "field[0.256,4.5;8,1;costbuy;Cost of purchase, if you buy nodes:;${costbuy}]"..
+            "field[0.256,5.5;8,1;costsell;Cost of sales, if you sell nodes:;${costsell}]"..
             "button_exit[3.1,6;2,1;button;Retune]")
         meta:set_string("infotext", "Detuned Shop")
 --        meta:set_string("owner", "")
