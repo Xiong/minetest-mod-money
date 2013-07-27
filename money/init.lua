@@ -365,6 +365,7 @@ minetest.register_node("money:shop", {
                     ss..
                     "list[current_player;main;0,6;8,4;]")
                 meta:set_string("shopname", fields.shopname)
+                meta:set_string("action", fields.action)
                 meta:set_string("nodename", fields.nodename)
                 meta:set_string("amount", fields.amount)
                 meta:set_string("costbuy", fields.costsell)
