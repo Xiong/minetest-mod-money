@@ -241,8 +241,6 @@ minetest.register_node("money:shop", {
 --fiddle
 
     on_punch = function(pos,player)
-        minetest.chat_send_all("Something punched!")
-        
         local meta = minetest.env:get_meta(pos)
         meta:set_string("formspec", "size[8,6.6]"..
             "field[0.256,0.5;8,1;shopname;Name of your shop:;${shopname}]"..
@@ -253,12 +251,12 @@ minetest.register_node("money:shop", {
             "field[0.256,5.5;8,1;costsell;Cost of sales, if you sell nodes:;${costsell}]"..
             "button_exit[3.1,6;2,1;button;Retune]")
         meta:set_string("infotext", "Detuned Shop")
---        meta:set_string("owner", "")
+--        meta:set_string("owner", .. owner .. )
 --        local inv = meta:get_inventory()
 --        inv:set_size("main", 8*4)
         meta:set_string("form", "yes")
         
-        minetest.chat_send_all("... Done.")
+        minetest.chat_send_player( meta:get_string("owner"), "Shop detuned.")
     end,
 
 --endfiddle
