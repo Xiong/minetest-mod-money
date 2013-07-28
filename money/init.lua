@@ -238,28 +238,30 @@ minetest.register_node("money:shop", {
         meta:set_string("form", "yes")
     end,
 
---fiddle
+--retune
 
-    on_punch = function(pos,player)
+    on_punch = function( pos, node, player )
         local meta = minetest.env:get_meta(pos)
-        meta:set_string("formspec", "size[8,6.6]"..
-            "field[0.256,0.5;8,1;shopname;Name of your shop:;${shopname}]"..
-            "field[0.256,1.5;8,1;action;Do you want buy(B) or sell(S) or buy and sell(BS):;${action}]"..
-            "field[0.256,2.5;8,1;nodename;Name of node, that you want buy or/and sell:;${nodename}]"..
-            "field[0.256,3.5;8,1;amount;Amount of these nodes:;${amount}]"..
-            "field[0.256,4.5;8,1;costbuy;Cost of purchase, if you buy nodes:;${costbuy}]"..
-            "field[0.256,5.5;8,1;costsell;Cost of sales, if you sell nodes:;${costsell}]"..
-            "button_exit[3.1,6;2,1;button;Retune]")
-        meta:set_string("infotext", "Detuned Shop")
---        meta:set_string("owner", .. owner .. )
---        local inv = meta:get_inventory()
---        inv:set_size("main", 8*4)
-        meta:set_string("form", "yes")
-        
-        minetest.chat_send_player( meta:get_string("owner"), "Shop detuned.")
+        --~ minetest.chat_send_all("Shop punched.")
+        --~ minetest.chat_send_all(name)
+
+        if player:get_player_name() == meta:get_string("owner") then
+            meta:set_string("formspec", "size[8,6.6]"..
+                "field[0.256,0.5;8,1;shopname;Name of your shop:;${shopname}]"..
+                "field[0.256,1.5;8,1;action;Do you want buy(B) or sell(S) or buy and sell(BS):;${action}]"..
+                "field[0.256,2.5;8,1;nodename;Name of node, that you want buy or/and sell:;${nodename}]"..
+                "field[0.256,3.5;8,1;amount;Amount of these nodes:;${amount}]"..
+                "field[0.256,4.5;8,1;costbuy;Cost of purchase, if you buy nodes:;${costbuy}]"..
+                "field[0.256,5.5;8,1;costsell;Cost of sales, if you sell nodes:;${costsell}]"..
+                "button_exit[3.1,6;2,1;button;Retune]")
+            meta:set_string("infotext", "Detuned Shop")
+            meta:set_string("form", "yes")
+
+            minetest.chat_send_player( name, "Shop detuned.")
+        end
     end,
 
---endfiddle
+--end retune
 
     can_dig = function(pos,player)
         local meta = minetest.env:get_meta(pos);
