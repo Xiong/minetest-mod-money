@@ -553,7 +553,9 @@ minetest.register_node("money:barter_shop", {
             if fields.bartershopname ~= "" and minetest.registered_items[fields.nodename1] and minetest.registered_items[fields.nodename2] and tonumber(fields.amount1) and tonumber(fields.amount1) >= 1 and tonumber(fields.amount2) and tonumber(fields.amount2) >= 1 and (meta:get_string("owner") == sender:get_player_name() or minetest.get_player_privs(sender:get_player_name())["money_admin"]) then
                 meta:set_string("formspec", "size[8,10;]"..
                     "list[context;main;0,0;8,4;]"..
-                    "label[0.256,4.5;Shop takes "..fields.amount2.." "..fields.nodename2.." and gives "..fields.amount1.." "..fields.nodename1.."]"..
+                    --~ "label[0.256,4.5;Shop takes "..fields.amount2.." "..fields.nodename2.." \n and gives "..fields.amount1.." "..fields.nodename1.."]"..
+                    "label[0.256,4.2;Shop takes "..fields.amount2.." "..fields.nodename2.."]" ..
+                    "label[0.256,4.5;and gives "..fields.amount1.." "..fields.nodename1.."]"..
                     "button[3.1,5;2,1;button;Swap]"..
                     "list[current_player;main;0,6;8,4;]")
                 meta:set_string("bartershopname", fields.bartershopname)
