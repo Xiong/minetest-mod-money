@@ -209,6 +209,12 @@ local function has_shop_privilege(meta, player)--Does player have permissions fo
 end
 
 --Shop.
+
+--[[
+    Shop buys  : player sells : at costbuy  : with buttonsell
+    Shop sells : player buys  : at costsell : with buttonbuy
+]]
+
 minetest.register_node("money:shop", {
     description = "Shop",
     tiles = {"default_chest_top.png", "default_chest_top.png", "default_chest_side.png",
@@ -222,14 +228,16 @@ minetest.register_node("money:shop", {
         meta:set_string("infotext", "Untuned Shop (owned by " .. placer:get_player_name() .. ")")
     end,
     on_construct = function(pos)
+    -- Shop buys at costbuy
+    -- Shop sells at costsell
         local meta = minetest.env:get_meta(pos)
         meta:set_string("formspec", "size[8,6.6]"..
             "field[0.256,0.5;8,1;shopname;Name of your shop:;]"..
             "field[0.256,1.5;8,1;action;Do you want buy(B) or sell(S) or buy and sell(BS):;]"..
-            "field[0.256,2.5;8,1;nodename;Name of node, that you want buy or/and sell:;]"..
-            "field[0.256,3.5;8,1;amount;Amount of these nodes:;]"..
-            "field[0.256,4.5;8,1;costbuy;Cost of purchase, if you buy nodes:;]"..
-            "field[0.256,5.5;8,1;costsell;Cost of sales, if you sell nodes:;]"..
+            "field[0.256,2.5;8,1;nodename;Name of node to buy or/and sell:;]"..
+            "field[0.256,3.5;8,1;amount;Quantity of these nodes per lot:;]"..
+            "field[0.256,4.5;8,1;costbuy;Shop buys lots for this amount:;]"..
+            "field[0.256,5.5;8,1;costsell;Shop sells lots for this amount:;]"..
             "button_exit[3.1,6;2,1;button;Tune]")
         meta:set_string("infotext", "Untuned Shop")
         meta:set_string("owner", "")
@@ -241,6 +249,8 @@ minetest.register_node("money:shop", {
 --retune
 
     on_punch = function( pos, node, player )
+    -- Shop buys at costbuy
+    -- Shop sells at costsell
         local meta = minetest.env:get_meta(pos)
         --~ minetest.chat_send_all("Shop punched.")
         --~ minetest.chat_send_all(name)
@@ -250,9 +260,9 @@ minetest.register_node("money:shop", {
                 "field[0.256,0.5;8,1;shopname;Name of your shop:;${shopname}]"..
                 "field[0.256,1.5;8,1;action;Do you want buy(B) or sell(S) or buy and sell(BS):;${action}]"..
                 "field[0.256,2.5;8,1;nodename;Name of node, that you want buy or/and sell:;${nodename}]"..
-                "field[0.256,3.5;8,1;amount;Amount of these nodes:;${amount}]"..
-                "field[0.256,4.5;8,1;costbuy;Cost of purchase, if you buy nodes:;${costbuy}]"..
-                "field[0.256,5.5;8,1;costsell;Cost of sales, if you sell nodes:;${costsell}]"..
+                "field[0.256,3.5;8,1;amount;Quantity of nodes per lot:;${amount}]"..
+                "field[0.256,4.5;8,1;costbuy;Shop buys lots for this amount:;${costbuy}]"..
+                "field[0.256,5.5;8,1;costsell;Shop sells lots for this amount:;${costsell}]"..
                 "button_exit[3.1,6;2,1;button;Retune]")
             meta:set_string("infotext", "Detuned Shop")
             meta:set_string("form", "yes")
@@ -349,9 +359,11 @@ minetest.register_node("money:shop", {
                 end
                 local s, ss
                 if fields.action == "B" then
+                -- Shop buys, player sells: at costbuy
                     s = " sell "
                     ss = "button[1,5;2,1;buttonsell;Sell("..fields.costbuy..")]"
                 elseif fields.action == "S" then
+                -- Shop sells, player buys: at costsell
                     s = " buy "
                     ss = "button[1,5;2,1;buttonbuy;Buy("..fields.costsell..")]"
                 else
@@ -374,6 +386,7 @@ minetest.register_node("money:shop", {
                 meta:set_string("form", "no")
             end
         elseif fields["buttonbuy"] then
+        -- Shop sells, player buys: at costsell: with buttonbuy
             local sender_name = sender:get_player_name()
             local inv = meta:get_inventory()
             local sender_inv = sender:get_inventory()
@@ -383,19 +396,20 @@ minetest.register_node("money:shop", {
             elseif not sender_inv:room_for_item("main", meta:get_string("nodename") .. " " .. meta:get_string("amount")) then
                 minetest.chat_send_player(sender_name, "In your inventory is not enough space.")
                 return true
-            elseif get_money(sender_name) - tonumber(meta:get_string("costbuy")) < 0 then
+            elseif get_money(sender_name) - tonumber(meta:get_string("costsell")) < 0 then
                 minetest.chat_send_player(sender_name, "You do not have enough money.")
                 return true
             elseif not exist(meta:get_string("owner")) then
                 minetest.chat_send_player(sender_name, "The owner's account does not currently exist; try again later.")
                 return true
             end
-            set_money(sender_name, get_money(sender_name) - meta:get_string("costbuy"))
-            set_money(meta:get_string("owner"), get_money(meta:get_string("owner")) + meta:get_string("costbuy"))
+            set_money(sender_name, get_money(sender_name) - meta:get_string("costsell"))
+            set_money(meta:get_string("owner"), get_money(meta:get_string("owner")) + meta:get_string("costsell"))
             sender_inv:add_item("main", meta:get_string("nodename") .. " " .. meta:get_string("amount"))
             inv:remove_item("main", meta:get_string("nodename") .. " " .. meta:get_string("amount"))
-            minetest.chat_send_player(sender_name, "You bought " .. meta:get_string("amount") .. " " .. meta:get_string("nodename") .. " at a price of " .. CURRENCY_PREFIX .. meta:get_string("costbuy") .. CURRENCY_POSTFIX .. ".")
+            minetest.chat_send_player(sender_name, "You bought " .. meta:get_string("amount") .. " " .. meta:get_string("nodename") .. " at a price of " .. CURRENCY_PREFIX .. meta:get_string("costsell") .. CURRENCY_POSTFIX .. ".")
         elseif fields["buttonsell"] then
+            -- Shop buys, player sells: at costbuy: with buttonsell
             local sender_name = sender:get_player_name()
             local inv = meta:get_inventory()
             local sender_inv = sender:get_inventory()
@@ -405,18 +419,18 @@ minetest.register_node("money:shop", {
             elseif not inv:room_for_item("main", meta:get_string("nodename") .. " " .. meta:get_string("amount")) then
                 minetest.chat_send_player(sender_name, "In the shop is not enough space.")
                 return true
-            elseif get_money(meta:get_string("owner")) - meta:get_string("costsell") < 0 then
+            elseif get_money(meta:get_string("owner")) - meta:get_string("costbuy") < 0 then
                 minetest.chat_send_player(sender_name, "The buyer is not enough money.")
                 return true
             elseif not exist(meta:get_string("owner")) then
                 minetest.chat_send_player(sender_name, "The owner's account does not currently exist; try again later.")
                 return true
             end
-            set_money(sender_name, get_money(sender_name) + meta:get_string("costsell"))
-            set_money(meta:get_string("owner"), get_money(meta:get_string("owner")) - meta:get_string("costsell"))
+            set_money(sender_name, get_money(sender_name) + meta:get_string("costbuy"))
+            set_money(meta:get_string("owner"), get_money(meta:get_string("owner")) - meta:get_string("costbuy"))
             sender_inv:remove_item("main", meta:get_string("nodename") .. " " .. meta:get_string("amount"))
             inv:add_item("main", meta:get_string("nodename") .. " " .. meta:get_string("amount"))
-            minetest.chat_send_player(sender_name, "You sold " .. meta:get_string("amount") .. " " .. meta:get_string("nodename") .. " at a price of " .. CURRENCY_PREFIX .. meta:get_string("costsell") .. CURRENCY_POSTFIX .. ".")
+            minetest.chat_send_player(sender_name, "You sold " .. meta:get_string("amount") .. " " .. meta:get_string("nodename") .. " at a price of " .. CURRENCY_PREFIX .. meta:get_string("costbuy") .. CURRENCY_POSTFIX .. ".")
         end
     end,
  })
